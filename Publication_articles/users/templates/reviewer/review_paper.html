@@ -1,0 +1,70 @@
+{% extends 'reviewer/base.html' %}
+
+{% block title %}
+    Review Submitted Papers
+{% endblock title %}
+
+{% block body %}
+<style>
+    .container {
+        background-color: whitesmoke;
+        padding: 20px;
+        border-radius: 10px;
+        color: black;
+    }
+    .btn-update {
+        border-radius: 10px;
+    }
+    .reviewer-comment {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="text-center mb-4">
+                <h2 class="mb-0">Paper Details</h2>
+            </div>
+            <h5>Paper ID: ABC{{ paper.id|stringformat:"003d" }}</h5>
+            <h4 class="mb-3">Paper Title: {{ paper.title_paper }}</h4>
+            <h5>Paper Version: v{{ paper.version }}</h5>
+            <h4>Auth Name: {{ paper.Auth_name }}</h4>
+            <h4>Conference Name: {{ paper.conference }}</h4>
+            <h5>Auther Email: {{ paper.user }}</h5>
+            <p class="mb-3">Paper Description: {{ paper.paper_description }}</p>
+            <a href="/media/{{ paper.paper_upload }}" class="btn btn-success" download="{{ paper.paper_upload }}">
+                Download Paper
+            </a>
+            <h5 class="mt-3">Date Of Submit: {{ paper.start_date }}</h5>
+            <h5 style="text-transform: capitalize;">Paper Status: {{ paper.status }}</h5>
+        </div>
+        <div class="col-md-6">
+            <div class="text-center mb-4">
+                <h2 class="mb-0">Reviewer Comments</h2>
+            </div>
+            {% for reviewer_id, comment in paper.reviewer_comments.items %}
+                {% if comment %}
+                    <div class="reviewer-comment">
+                        <p>Comment: {{ comment }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if user.is_authenticated and user.is_reviewer %}
+                <form method="post" action="{% url 'paper_reviewer' paper_id=paper.id %}">
+                    {% csrf_token %}
+                    <div class="form-group my-2">
+                        <label for="comment">Your Comment</label>
+                        <textarea name="comment" id="comment" class="form-control" rows="4"></textarea>
+                    </div>
+                    <button class="btn btn-primary my-2 btn-update" type="submit">Update Comment</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock body %}

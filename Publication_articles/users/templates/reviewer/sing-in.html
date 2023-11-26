@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+      crossorigin="anonymous"
+    ></script>
+     <title>Connexion</title>
+</head>
+<style>
+  nav{
+      height: 62px;
+  }
+  .navbar-brand {
+      display: flex;
+      align-items: center;
+      color: black;
+  }
+  .navbar-logo {
+      margin-top: 0px;
+      margin-right: 0px;
+      width: 59px;
+      height: 59px;
+      background-image: url("/static/logopng.png");
+      background-size: cover;
+      background-position: center;
+      margin-right: 4px;
+      border-radius: 50%; 
+  }
+  
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg " style="background-color: rgba(9, 9, 95, 0.788);">
+      <div class="container-fluid">
+          
+          <a class="navbar-brand" style="color: white; margin-right: 4rem; font-size: 23px;font-weight: bold; font-family: Arial, Helvetica, sans-serif;" href="/"><div class="navbar-logo"></div>Accueil</a>
+          
+      </div>
+  </nav>
+  {% comment %} <a class="btn btn-secondary mx-2" href="/">Back</a> {% endcomment %}
+     <div class="container mt-5">
+          <form
+            class="col-10 mx-auto card p-3 shadow-lg"
+            action="/users/sing-in/"
+            method="post"
+          >
+          <h1 style="text-align: center">Connexion</h1>
+          <br>
+          {% if error_message %}
+               <p style="color: rgb(216, 65, 65);" >{{ error_message }}</p>
+          {% endif %}
+          {% if success_message %}
+               <p style="color: rgb(34, 197, 45);" >{{ success_message }}</p>
+          {% endif %}
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label"
+                >Email </label
+              >
+              <input
+                type="email"
+                name="email"
+                class="form-control"
+                id="exampleInputEmail1"
+                aria-describedby="emailHelp"
+              />
+              <div id="emailHelp" class="form-text">
+                Votre email restera confidentiel.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">Mot de passe</label>
+              <input
+                type="password"
+                name="password"
+                class="form-control"
+                id="exampleInputPassword1"
+              />
+            </div>
+            <div class="mb-3">
+            <label for="user_role">Sélectionnez votre rôle :</label>
+            <select id="user_role" name="user_role">
+                <option value="auteur">Auteur</option>
+                <option value="reviseur">Réviseur</option>
+            </select>
+          </div>
+            <div class="col-auto my-4">
+              <button type="submit" class="btn btn-primary">Se connecter</button>
+            </div>
+          </form>
+     </div>
+</body>
+</html>

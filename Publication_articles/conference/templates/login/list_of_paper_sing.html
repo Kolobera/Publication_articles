@@ -1,0 +1,103 @@
+{% extends 'login/base.html' %}
+
+{% block title %}List of papers{% endblock title %}
+
+{% block body %}
+{% if papers %}
+    <form method="post" action="{% url 'Assign_reviewer_paper' reviewer_id=reviewer_id %}">
+        {% csrf_token %}
+        <div class="container my-4">
+            <h2 class="text-center">Submitted Papers</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Paper Id</th>
+                            <th scope="col">Paper Title</th>
+                            <th scope="col">Paper Version</th>
+                            <th scope="col">Auth Name</th>
+                            <th scope="col">Conference Name</th>
+                            <th scope="col">User Email</th>
+                            <th scope="col">Paper Description</th>
+                            <th scope="col">Paper</th>
+                            <th scope="col">Date Of Submit</th>
+                            <th scope="col">Assign Papers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for papers in papers %}
+                        <tr>
+                            <th scope="row">{{ papers.id }}</th>
+                            <td>{{ papers.title_paper }}</td>
+                            <td>v{{ papers.version }}</td>
+                            <td>{{ papers.Auth_name }}</td>
+                            <td>{{ papers.conference }}</td>
+                            <td>{{ papers.user }}</td>
+                            <td>{{ papers.paper_description }}</td>
+                            <td><a href="/media/{{ papers.paper_upload }}">{{ papers.paper_upload }}</a></td>
+                            <td>{{ papers.start_date }}</td>
+                            <td>
+                                <input type="checkbox" name="papers_to_assign" value="{{ papers.id }}">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Assign Selected Papers</button>
+            </div>
+        </div>
+    </form>
+{% endif %}
+
+<hr class="my-5" style="color: black;"> <!-- Add a horizontal line separator -->
+
+{% if resubmit_paper %}
+    <form method="post" action="{% url 'Assign_reviewer_paper_re' reviewer_id=reviewer_id %}">
+        {% csrf_token %}
+        <div class="container my-4">
+            <h2 class="text-center">Resubmitted Papers</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Paper Id</th>
+                            <th scope="col">Paper Title</th>
+                            <th scope="col">Paper Version</th>
+                            <th scope="col">Auth Name</th>
+                            <th scope="col">Conference Name</th>
+                            <th scope="col">User Email</th>
+                            <th scope="col">Paper Description</th>
+                            <th scope="col">Paper</th>
+                            <th scope="col">Date Of Submit</th>
+                            <th scope="col">Assign Papers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resubmit_paper in resubmit_paper %}
+                        <tr>
+                            <th scope="row">{{ resubmit_paper.paper_id }}</th>
+                            <td>{{ resubmit_paper.title_paper }}</td>
+                            <td>v{{ resubmit_paper.version }}</td>
+                            <td>{{ resubmit_paper.Auth_name }}</td>
+                            <td>{{ resubmit_paper.conference }}</td>
+                            <td>{{ resubmit_paper.user }}</td>
+                            <td>{{ resubmit_paper.paper_description }}</td>
+                            <td><a href="/media/{{ resubmit_paper.paper_upload }}">{{ resubmit_paper.paper_upload }}</a></td>
+                            <td>{{ resubmit_paper.start_date }}</td>
+                            <td>
+                                <input type="checkbox" name="papers_to_assign" value="{{ resubmit_paper.id }}">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Assign Selected Papers</button>
+            </div>
+        </div>
+    </form>
+{% endif %}
+{% endblock %}

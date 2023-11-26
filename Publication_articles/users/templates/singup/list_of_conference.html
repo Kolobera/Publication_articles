@@ -1,0 +1,34 @@
+{% extends 'singup/base.html/' %}
+
+{% block title %}List of Conference{% endblock title %}
+
+{% block body %}
+
+{% if conference %}
+<div class="container my-4 ">
+     <table class="table table-bordered">
+          <thead class="thead-dark">
+          <tr>
+          <th scope="col">S.No</th>
+          <th scope="col">Conference Name</th>
+          <th scope="col">Conference Description</th>
+          <th scope="col">Starting Date</th>
+          <th scope="col">End Date</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for conference in conference %}
+          <tr>
+          <th scope="row">{{conference.id}}</th>
+          <td><a href="{% url 'conference_detail' conf_id=conference.id %}">{{conference.conference_name}}</a></td>
+          <td>{{conference.conference_descriptions}}</td>
+          <td>{{conference.conference_start_date}}</td>
+          <td>{{conference.conference_end_date}}</td>
+          </tr>
+          {% endfor%}
+          </tbody>
+     </table>
+</div>
+{% endif %}
+
+{% endblock body %}

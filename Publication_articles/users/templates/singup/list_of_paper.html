@@ -1,0 +1,115 @@
+{% extends 'singup/base.html' %}
+{% block title %}List of Papers{% endblock title %}
+{% block body %}
+
+<div class="container">
+     {% if papers_uploaded %}
+          <div class="container my-4">
+               <h2 style="text-align: center;">Submitted Papers</h2>
+               <div class="table-responsive">
+                    <table class="table table-bordered mx-auto">
+                         <thead class="thead-dark">
+                         <tr>
+                              <th scope="col" style="width: 20%;" >Paper ID</th>
+                              <th scope="col" style="width: 20%;" >Paper Title</th>
+                              <th scope="col" style="width: 20%;" >Conference Name</th>
+                              <th scope="col" style="width: 20%;" >Version</th>
+                              <th scope="col" style="width: 20%;" >Auth Name</th>
+                              <th scope="col" style="width: 20%;" >Keyword</th>
+                              <th scope="col" style="width: 20%;" >Abstract</th>
+                              <th scope="col" style="width: 10%;" >Paper </th>
+                              <th scope="col" style="width: 20%;" >Date Of Submit</th>
+                              <th scope="col">Status</th>
+                              <th scope="col">comments </th>
+                              <th scope="col">Resubmit</th>
+                         </tr>
+                         </thead>
+                         <tbody>
+                         {% for paper in papers_uploaded %}
+                              <tr>
+                                   <th scope="row">ABC{{ paper.id|stringformat:"003d" }}</th>
+                                   <td>{{paper.title_paper}}</td>
+                                   <td>{{paper.conference}}</td>
+                                   <th>v{{paper.version}}</th>
+                                   <td>{{paper.Auth_name}}</td>
+                                   <td>{{paper.paper_keyword}}</td>
+                                   <td>{{paper.paper_description}}</td>
+                                   <td><a href="/media/{{paper.paper_upload}}"style="width: 10%;" ">{{paper.paper_upload}}</a> </td>
+                                   <td>{{paper.start_date}}</td>
+                                   <td style="text-transform: capitalize;" >{{paper.status}}</td>
+                                   <td>
+                                        {% for reviewer_id, comment in paper.reviewer_comments.items %}
+                                             {% if comment %}
+                                                  <div class="reviewer-comment my-3 p-3 border">
+                                                       <p>{{ comment }}</p>
+                                                  </div>
+                                             {% endif %}
+                                        {% endfor %}
+                                   </td>
+                                   <td><a href="{% url 'resubmit' paper_id=paper.id %}"><button class="btn btn-primary">Resubmit</button></a></td>
+                              </tr>
+                         {% endfor %}
+                         </tbody>
+                    </table>
+               </div>
+          </div>
+     {% else %}
+          <h4 class="my-4" style="text-align: center;color: red;">No Paper Submitted In This Conference</h4>
+     {% endif %}
+     {% if reupload_paper %}
+     <div class="container my-4">
+          <h2 style="text-align: center;">Resubmitted Papers</h2>
+          <div class="table-responsive">
+               <table class="table table-bordered mx-auto">
+                    <thead class="thead-dark">
+                    <tr>
+                         <th scope="col">Paper ID</th>
+                         <th scope="col">Paper Title</th>
+                         <th scope="col">Conference Name</th>
+                         <th scope="col">Version</th>
+                         <th scope="col">Auth Name</th>
+                         <th scope="col">Keyword</th>
+                         <th scope="col">Abstract</th>
+                         <th scope="col">Paper </th>
+                         <th scope="col">Date Of Submit</th>
+                         <th scope="col">Status</th>
+                         <th scope="col">comments </th>
+                         <th scope="col">Resubmit</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for reupload in reupload_paper %}
+                         <tr>
+                              <th scope="row">ABC{{ reupload.paper_id|stringformat:"003d" }}</th>
+                              <td>{{reupload.title_paper}}</td>
+                              <td>{{reupload.conference}}</td>
+                              <th>v{{reupload.version}}</th>
+                              <td>{{reupload.Auth_name}}</td>
+                              <td>{{reupload.paper_keyword}}</td>
+                              <td>{{reupload.paper_description}}</td>
+                              <td><a href="/media/{{reupload.paper_upload}} ">{{reupload.paper_upload}}</a> </td>
+                              <td>{{reupload.start_date}}</td>
+                              <td style="text-transform: capitalize;" >{{reupload.status}}</td>
+                              <td>
+                                   {% for reviewer_id, comment in paper.reviewer_comments.items %}
+                                        {% if comment %}
+                                             <div class="reviewer-comment my-3 p-3 border">
+                                                  <p>{{ comment }}</p>
+                                             </div>
+                                        {% endif %}
+                                   {% endfor %}
+                              </td>
+                              <td><a href="{% url 're_resubmit' re_paper_id=reupload.id %}"><button class="btn btn-primary">Resubmit</button></a></td>
+                         </tr>
+                    {% endfor %}
+                    </tbody>
+               </table>
+          </div>
+     </div>
+     {% endif %}
+     <div class="mt-4">
+          <a class="btn btn-secondary" href="../../">Back</a>
+      </div>
+</div>
+
+{% endblock body %}
