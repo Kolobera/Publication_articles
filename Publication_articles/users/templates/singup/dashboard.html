@@ -3,18 +3,18 @@
 {% block body %}
 
 <center class="my-4" >
-  <h1 class="text-uppercase">WellCome {{uname}} </h1>
+  <h1 class="text-uppercase">Bienvenue {{uname}} </h1>
 </center>
 {% if conference %}
 <div class="container my-4">
      <table class="table table-bordered">
          <thead class="thead-dark">
              <tr>
-                 <th scope="col">S.No</th>
-                 <th scope="col">Conference Name</th>
-                 <th scope="col">Conference Description</th>
-                 <th scope="col">Starting Date</th>
-                 <th scope="col">End Date</th>
+                 <th scope="col">No</th>
+                 <th scope="col">Nom de la Conference</th>
+                 <th scope="col">Description</th>
+                 <th scope="col">Date de Début</th>
+                 <th scope="col">Date de Fin</th>
              </tr>
          </thead>
          <tbody>
@@ -31,7 +31,7 @@
      </table>
  </div>
 {% else %}
-     <h1 style="text-align: center;color: red;" > No Conference Present Now </h1>
+     <h1 style="text-align: center;color: red;" > Il n'y a pas de conférence actuellement</h1>
 {% endif %}
 
 {% endblock body %}

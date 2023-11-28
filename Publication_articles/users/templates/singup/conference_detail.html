@@ -5,18 +5,18 @@
 {% block body %}
 {% if user.is_authenticated %}
 <div class="container my-4">
-     <h1>Conference Title: {{ conf_instance.conference_name }}</h1>
+     <h1>Nom de la Conference: {{ conf_instance.conference_name }}</h1>
      <p class="mb-4">Conference ID: {{ conf_instance.id }}</p>
-     <p class="mb-4"><h4>Conference Description:</h4> {{ conf_instance.conference_descriptions }}</p>
-     <p><h5>Start Date:</h5> {{ conf_instance.conference_start_date }}</p>
-     <p><h5>End Date:</h5> {{ conf_instance.conference_end_date }}</p>
+     <p class="mb-4"><h4>Description:</h4> {{ conf_instance.conference_descriptions }}</p>
+     <p><h5>Date de Début:</h5> {{ conf_instance.conference_start_date }}</p>
+     <p><h5>Date de Fin:</h5> {{ conf_instance.conference_end_date }}</p>
      {% comment %} {% if papers_uploaded.exists %}
          {% with latest_paper=papers_uploaded.last %} {% endcomment %}
          <div class="mt-4">
              {% comment %} <h4 class="text-uppercase">Status:{% url 'list_of_paper' conf_id=conf_instance.id  %}</h4> {% endcomment %}
-             <a class="btn btn-warning mt-2" href="{% url 'list_of_paper' conf_id=conf_instance.id  %}">Status</a>
+             <a class="btn btn-warning mt-2" href="{% url 'list_of_paper' conf_id=conf_instance.id  %}">Soumettre une Contribution</a>
              {% comment %} <a class="btn btn-success mt-2" href="/media/{{ latest_paper.paper_upload }}">View Submitted Paper</a> {% endcomment %}
-             <a class="btn btn-success mt-2" href="{% url 'submit' conf_id=conf_instance.id %}">Submit Paper</a>
+             <a class="btn btn-success mt-2" href="{% url 'submit' conf_id=conf_instance.id %}">S'enregistrer</a>
          </div>
          {% comment %} {% endwith %} {% endcomment %}
      {% comment %} {% else %} {% endcomment %}
@@ -26,7 +26,7 @@
          </div> {% endcomment %}
      {% comment %} {% endif %} {% endcomment %}
      <div class="mt-4">
-         <a class="btn btn-secondary" href="/singup/success/list-of-conference/">Back</a>
+         <a class="btn btn-secondary" href="/singup/success/list-of-conference/">Retour</a>
      </div>
  </div>
  

@@ -27,6 +27,12 @@ class conference(models.Model):
 
      topics = models.ManyToManyField('ConferenceTopic', related_name='conferences', blank=True)
 
+     def tracks_list(self):
+        return ', '.join([str(track) for track in self.tracks.all()])
+
+     def topics_list(self):
+        return ', '.join([str(topic) for topic in self.topics.all()])
+        
      
      def __str__(self):
           return self.conference_name

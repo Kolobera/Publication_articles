@@ -3,7 +3,7 @@ from Publication_articles import settings
 from django.contrib.auth import authenticate, login , logout
 from django.urls import reverse
 from users.models import Reviewer_data
-from users.models import CustomUser , paper ,resubmit_papers
+from users.models import CustomUser , paper , resubmit_papers, Author
 from django.core.mail import send_mail
 import smtplib
 from django.conf import settings
@@ -15,7 +15,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import *
 from django.shortcuts import get_object_or_404
-from conference.models import conference
+from conference.models import *
 # Create your views here.
 
 
@@ -94,7 +94,8 @@ def activate_reviewer(request, uidb64, token):
 
 def sing_in_reviewer(request):
     if request.user.is_authenticated:
-         return redirect('reviewer-dashboard')
+        pass
+         #return redirect('reviewer-dashboard')
     if request.method == 'POST':
          if request.POST.get('user_role') == 'reviseur':
             email=request.POST.get('email')
@@ -302,7 +303,7 @@ def singup_view(request):
         password = request.POST.get('password')
         if CustomUser.objects.filter(email=email).exists():
                 context = {'error_message': 'This email is already registered.'}
-                return render(request, 'singup/singup.html',context)        
+                return render(request, 'reviewer/singup.html',context)        
         else:
             my_user = CustomUser.objects.create_user(
                     name=name,
@@ -334,11 +335,11 @@ def singup_view(request):
             try:
                 send_mail(subject2, messages2, from_email, to_list, fail_silently=True)
                 context_success = {'success_message': 'Your Account Create Successfully. Please Check Your Email and Verify It  :-) '}
-                return render(request, 'singup/singIn.html', context_success)
+                return render(request, 'reviewer/sing-in.html', context_success)
             except smtplib.SMTPException as e:
                 print("SMTPException occurred:",e)
                 context_success = {'error_message': 'Your Account Create Successfully. There is a problem to sending mail But You Can login  :-) '}
-                return render(request, 'singup/singIn.html', context_success)
+                return render(request, 'singup/sing-in.html', context_success)
     else:
         return render(request, 'singup/singup.html')
 def singIn(request):
@@ -358,9 +359,9 @@ def singIn(request):
             return redirect('success')
         else:
             context = {'error_message': 'Invalid email or password'}
-            return render(request, 'singup/singIn.html', context)
+            return render(request, 'reviewer/sing-in.html', context)
     else:
-        return render(request, 'singup/singIn.html')
+        return render(request, 'reviewer/sing-in.html')
 def logout_page(request):
     logout(request)
     return redirect('/')
@@ -375,7 +376,7 @@ def success_view(request):
         }
         return render(request, 'singup/dashboard.html',context)
     else:
-        return redirect('singin') 
+        return redirect('reviewer-sing-in') 
 def activate(request, uidb64, token):
     try:
         uidb64 = force_str(urlsafe_base64_decode(uidb64))
@@ -491,6 +492,25 @@ def resubmit(request,paper_id):
         }
         return render(request,'singup/resubmit.html',context)
 
+def getDictArray(post, name):
+        dic = {}
+        for k in post.keys():
+            if k.startswith(name):
+                rest = k[len(name):]
+                
+                # split the string into different components
+                parts = [p[:-1] for p in rest.split('[')][1:]
+                print (parts)
+                id = int(parts[0])
+                
+                # add a new dictionary if it doesn't exist yet
+                if id not in dic:
+                    dic[id] = {}
+                    
+                # add the information to the dictionary
+                dic[id][parts[1]] = post.get(k)
+        return dic
+
 def submit_paper(request,conf_id):
     if request.user.is_authenticated and request.user.is_auth:
         user = request.user
@@ -498,45 +518,73 @@ def submit_paper(request,conf_id):
         if request.method=="POST":
             user=request.user
             title_paper=request.POST.get('title_paper')
-            Auth_name=request.POST.get('Auth_name')
-            Auth_email=request.POST.get('Auth_email')
-            Auth_affiliation=request.POST.get('Auth_affiliation')
-            Auth_mobile=request.POST.get('Auth_mobile')
-            corresponding_auth_name=request.POST.get('corresponding_auth_name')
-            corresponding_auth_email=request.POST.get('corresponding_auth_email')
-            corresponding_auth_affiliation=request.POST.get('corresponding_auth_affiliation')
-            corresponding_auth_mobile=request.POST.get('corresponding_auth_mobile')
-            other_auth_name=request.POST.get('other_auth_name')
-            other_auth_email=request.POST.get('other_auth_email')
-            other_auth_affiliation=request.POST.get('other_auth_affiliation')
-            other_auth_mobile=request.POST.get('other_auth_mobile')
-            paper_keyword=request.POST.get('paper_keyword')
-            paper_description=request.POST.get('paper_description')
+            track_preference = get_object_or_404(ConferenceTrack, track_name=request.POST.get('track_preference'))
+            main_topic = get_object_or_404(ConferenceTopic, topic_name=request.POST.get('main_topic'))
+            contribution_type = request.POST.get('contribution_type')
+            content_type = request.POST.get('content_type')
+            abstract = request.POST.get('abstract')
+            print(request.POST)
+            authors_data = []
+
+        # Itérer sur les champs des auteurs jusqu'à ce qu'il n'y en ait plus
+            i = 0
+            while f'authors[{i}][0]' in request.POST:
+                email = request.POST.get(f'authors[{i}][0]')
+                name = request.POST.get(f'authors[{i}][1]')
+                first_name = request.POST.get(f'authors[{i}][2]')
+                institution = request.POST.get(f'authors[{i}][3]')
+                country = request.POST.get(f'authors[{i}][4]')
+
+                authors_data.append((email, name, first_name, institution, country))
+                i += 1
+
             pdf_upload = request.FILES.get('pdf_upload')
             print(pdf_upload)
-            new_paper=paper.objects.create(
-                user=user,
-                title_paper=title_paper,
-                Auth_name=Auth_name,
-                Auth_email=Auth_email,
-                Auth_affiliation=Auth_affiliation,
-                Auth_mobile=Auth_mobile,
-                corresponding_auth_name=corresponding_auth_name,
-                corresponding_auth_email=corresponding_auth_email,
-                corresponding_auth_affiliation=corresponding_auth_affiliation,
-                corresponding_auth_mobile=corresponding_auth_mobile,
-                other_auth_name=other_auth_name,
-                other_auth_email=other_auth_email,
-                other_auth_affiliation=other_auth_affiliation,
-                other_auth_mobile=other_auth_mobile,
-                paper_keyword=paper_keyword,
-                paper_description=paper_description,
-                paper_upload=pdf_upload,
-                status='pending',
-                conference=conf_instance,
-            )
+            print("klklj",authors_data)
+            if authors_data != []:
+            
+                new_paper=paper.objects.create(
+                    user=user,
+                    title_paper=title_paper,
+                    track_preference=track_preference,
+                    main_topic=main_topic,
+                    contribution_type=contribution_type,
+                    content_type=content_type,
+                    abstract=abstract,
+                    paper_upload=pdf_upload,
+                    status='pending',
+                    conference=conf_instance,
+                )
+            
+            for author_data in authors_data:
+                print("klji", author_data)
+                email, name, first_name, institution, country = author_data
+
+            # Vérifier si l'auteur existe déjà
+                author, created = Author.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        'first_name': name,
+                        'last_name': first_name,
+                        'institution': institution,
+                        'country': country,
+                    }
+                )
+                new_paper.authors.add(author)
+
+            # Ajouter l'auteur à la liste des auteurs de l'article
+            
             conf_instance.has_uploaded_paper = True
             new_paper.save()
+            print("Authors:::",list(new_paper.authors.all()))
+            print("EMAIL IS: ",new_paper.authors.all()[0].email)
+            send_mail(
+            'Confirmation de Soumission',
+            'Votre article a été soumis avec succès à la conférence.',
+            settings.EMAIL_HOST_USER,
+            [new_paper.authors.all()[0].email],  # Remplacez par le véritable champ email du principal auteur
+            fail_silently=False,
+        )
             context = {
                 'error_message': 'Successfully Upload Your Paper',
                 'v1':conf_instance.id,
@@ -546,10 +594,13 @@ def submit_paper(request,conf_id):
             context ={
                 'v1':conf_instance.id,
                 'uname' : user.name,
+                'conference' : get_object_or_404(conference, id=conf_id),
+                'tracks' : get_object_or_404(conference, id=conf_id).tracks.all(),
+                'topics' : get_object_or_404(conference, id=conf_id).topics.all(),
             }
             return render(request, 'singup/first_upload.html',context)
     else:
-        return redirect('signIn')
+        return redirect('reviewer-sing-in')
 
 
 def list_of_paper(request,conf_id):
@@ -561,7 +612,7 @@ def list_of_paper(request,conf_id):
         }
         return render(request, 'singup/list_of_paper.html',context)
     else:
-        return render(request, 'singup/singIn.html')
+        return render(request, 'reviewer/sing-in.html')
 
 
 
@@ -573,7 +624,7 @@ def list_of_conference(request):
         print("He Check The Conference List",user.name)
         return render(request,"singup/list_of_conference.html",{'conference':conference})
     else:
-        return render(request, 'singup/singIn.html')
+        return render(request, 'reviewer/sing-in.html')
 
 
 
@@ -588,5 +639,5 @@ def conference_detail(request, conf_id):
         }
         return render(request, 'singup/conference_detail.html', context)
     else:
-        return render(request, 'singup/singIn.html')
+        return render(request, 'reviewer/sing-in.html')
 

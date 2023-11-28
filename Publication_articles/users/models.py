@@ -115,7 +115,7 @@ class Author(models.Model):
 class paper(models.Model):
     #  id 20231001
      user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
-     contribution_title = models.CharField(max_length=255)
+     title_paper = models.CharField(max_length=255)
     
      track_preference = models.ForeignKey(ConferenceTrack, on_delete=models.SET_NULL, null=True)
      main_topic = models.ForeignKey(ConferenceTopic, on_delete=models.SET_NULL, null=True)
@@ -159,9 +159,15 @@ class paper(models.Model):
      def assigned_reviewers_list(self):
         return ', '.join([str(reviewer) for reviewer in self.assigned_reviewers.all()])
         assigned_reviewers_list.short_description = 'Assigned Reviewers'
+     
+     def other_topics_list(self):
+        return ', '.join([str(topic) for topic in self.other_topics.all()])
+     
+     def authors_list(self):
+        return ', '.join([str(author) for author in self.authors.all()])
 
      def __str__(self):
-          return self.contribution_title
+          return self.title_paper
 
 class resubmit_papers(models.Model):
 
