@@ -11,41 +11,115 @@
                 {% comment %} <a style="text-decoration: none;" href="{% url 'list_of_paper' conf_id=v1 %}">Back</a> {% endcomment %}
                 <div class="topside">
                         <center>
-                                <h1 class="text-uppercase">Publisher {{fname}} </h1>
-                                <h4>Here You Can Resubmit Your Paper</h4>
+                                <h1 class="text-uppercase">Auteur {{fname}} </h1>
+                                <h4>Vous pouvez modifier votre contribution</h4>
                         </center>
                 </div>
                 <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Titre de la contribution</label>
+                        <input type="titelbox" name="title_paper" class="form-control"
+                                id="exampleFormControlInput1" placeholder="Enter your paper title" value="{{ original_paper.title_paper }}">
+                </div>
+                <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Préférence de la Piste</label>
+                        <select id="track_preference" name="track_preference" required>
+                           {% for track in tracks %}
+                               <option value="{{ track }}" {% if track == 'original_paper.track_preference' %}selected{% endif %}>{{ track }}</option>
+                           {% endfor %}
+                       </select><br>
+                </div>
+
+                <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Sujet Principal</label>
+                        <select id="main_topic" name="main_topic" required>
+                           {% for topic in topics %}
+                               <option value="{{ topic }}" {% if track == 'original_paper.main_topic' %}selected{% endif %}>{{ topic }}</option>
+                           {% endfor %}
+                       </select><br>
                         
-                        <label for="exampleFormControlInput1" class="form-label">Paper Title</label>
-                        <input type="titelbox" name="title_paper" class="form-control" id="exampleFormControlInput1"
-                                placeholder="Enter your paper title">
                 </div>
                 <div class="mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">Auther Name</label>
-                        <input type="name" name="Auth_name" class="form-control" id="exampleFormControlInput1"
-                                placeholder="Ex:Yashavant Karnetkar">
+                        <label for="exampleFormControlInput1" class="form-label">Type de la Contribution</label>
+                        <select id="contribution_type" name="contribution_type" required>
+                           <option value="article">Article</option>
+                           <option value="présentation orale">Présentation Orale</option>
+                       </select><br>
+                       
                 </div>
                 <div class="mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">Keyword</label>
-                        <input type="text" name="paper_keyword" class="form-control" id="exampleFormControlInput1"
+                        <label for="exampleFormControlInput1" class="form-label">Type de contenu</label>
+                        <select id="content_type" name="content_type" required>
+                           <option value="recherche fondamentale" {% if 'recherche fondamentale' == 'original_paper.content_type' %}selected{% endif %}>Recherche Fondamentale</option>
+                           <option value="étude de cas" {% if 'étude de cas' == 'original_paper.content_type' %}selected{% endif %}>Étude de Cas</option>
+                           <option value="revue de littérature" {% if 'revue de littérature' == 'original_paper.content_type' %}selected{% endif %}>Revue de Littérature</option>
+                           <!-- Ajoutez d'autres types de contenu au besoin -->
+                       </select><br>
+                </div>
+                <div id="authors_fields">
+                   <h3>Auteurs :</h3>
+                   <table id="authors_table">
+                           <tr>
+                               <th>Email</th>
+                               <th>Nom</th>
+                               <th>Prénom</th>
+                               <th>Institution</th>
+                               <th>Pays</th>
+                           </tr>
+                           <!-- Première ligne vide pour permettre l'ajout -->
+                           <tr>
+                               <td><input type="email" name="authors[0][0]" required></td>
+                               <td><input type="text" name="authors[0][1]" required></td>
+                               <td><input type="text" name="authors[0][2]" required></td>
+                               <td><input type="text" name="authors[0][3]" required></td>
+                               <td><input type="text" name="authors[0][4]" required></td>
+                           </tr>
+                           <!-- Autres lignes d'auteurs seront ajoutées ici dynamiquement -->
+                       </table>
+                       
+                       <button type="button" onclick="addAuthorRow()">Ajouter un auteur</button>
+                       <hr>
+               </div>
+                
+
+                
+                
+                
+
+                
+                
+                <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Résumé</label>
+                        <input type="text" name="abstract" class="form-control" id="exampleFormControlInput1"
                 >
                 </div>
-                <div class="mb-3">
-                        <label for="exampleFormControlTextarea1" class="form-label">Abstract</label>
-                        <textarea name="paper_description" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Whatever you type"></textarea>
-                </div>
-                
                 <div class="input-group mb-3">
-                        <input type="file" name="pdf_upload" class="form-control" id="inputGroupFile02">
-                        <label class="input-group-text" for="inputGroupFile02">Upload</label>
-                </div>
+                   <input type="file" name="pdf_upload" class="form-control" id="inputGroupFile02">
+
+                 </div>
                 <div class="col-auto">
-                        <button type="submit" class="btn btn-success my-3">Submit</button>
-                        <a class="btn btn-secondary mx-2" href="../../../">Back</a>
+                        <button type="submit" class="btn btn-success my-3">Soumettre la contribution</button>
+                        <a class="btn btn-secondary mx-2" href="../../../">Retour</a>
                 </div>
 
         </form>
 </div>
+<script>
+   // Fonction pour ajouter dynamiquement des champs d'auteur
+   function addAuthorRow() {
+       var table = document.getElementById("authors_table");
+       var newRow = table.insertRow(table.rows.length); // Insérer avant la dernière ligne (celle du bouton)
+       var j = table.rows.length - 2;
+       var cells = [];
+       for (var i = 0; i < 5; i++) {
+           cells[i] = newRow.insertCell(i);
+           var input = document.createElement("input");
+           input.type = (i === 0) ? "email" : "text";
+           input.name = "authors[" + j + "][" + i + "]";  // Utilisation d'un tableau bidimensionnel pour chaque auteur
+           input.required = true;
+           cells[i].appendChild(input);
+       }
+   }
+</script>
+
 {% endif %}
 {% endblock body %}

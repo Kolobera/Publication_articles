@@ -121,8 +121,8 @@ class paper(models.Model):
      main_topic = models.ForeignKey(ConferenceTopic, on_delete=models.SET_NULL, null=True)
     
      TYPE_CHOICES = [
-        ('type1', 'Type 1'),
-        ('type2', 'Type 2'),
+        ('type1', 'Article'),
+        ('type2', 'Presentation Orale'),
         # Add other types as needed
      ]
      contribution_type = models.CharField(max_length=20, choices=TYPE_CHOICES)

@@ -484,32 +484,16 @@ def resubmit(request,paper_id):
                 "fname":user.name,
                 }
             return render(request, 'singup/resubmit.html',context)
-            
+        
         context={
             "original_paper":get_object_or_404(paper, id=paper_id),
             "user":request.user,
             "fname":user.name,
+            'tracks' : get_object_or_404(conference, id=int(original_paper.conference.id)).tracks.all(),
+            'topics' : get_object_or_404(conference, id=int(original_paper.conference.id)).topics.all(),
+            'all_authors': original_paper.authors.all()
         }
         return render(request,'singup/resubmit.html',context)
-
-def getDictArray(post, name):
-        dic = {}
-        for k in post.keys():
-            if k.startswith(name):
-                rest = k[len(name):]
-                
-                # split the string into different components
-                parts = [p[:-1] for p in rest.split('[')][1:]
-                print (parts)
-                id = int(parts[0])
-                
-                # add a new dictionary if it doesn't exist yet
-                if id not in dic:
-                    dic[id] = {}
-                    
-                # add the information to the dictionary
-                dic[id][parts[1]] = post.get(k)
-        return dic
 
 def submit_paper(request,conf_id):
     if request.user.is_authenticated and request.user.is_auth:
@@ -523,7 +507,6 @@ def submit_paper(request,conf_id):
             contribution_type = request.POST.get('contribution_type')
             content_type = request.POST.get('content_type')
             abstract = request.POST.get('abstract')
-            print(request.POST)
             authors_data = []
 
         # Itérer sur les champs des auteurs jusqu'à ce qu'il n'y en ait plus
@@ -539,8 +522,6 @@ def submit_paper(request,conf_id):
                 i += 1
 
             pdf_upload = request.FILES.get('pdf_upload')
-            print(pdf_upload)
-            print("klklj",authors_data)
             if authors_data != []:
             
                 new_paper=paper.objects.create(
@@ -557,7 +538,6 @@ def submit_paper(request,conf_id):
                 )
             
             for author_data in authors_data:
-                print("klji", author_data)
                 email, name, first_name, institution, country = author_data
 
             # Vérifier si l'auteur existe déjà
@@ -576,17 +556,15 @@ def submit_paper(request,conf_id):
             
             conf_instance.has_uploaded_paper = True
             new_paper.save()
-            print("Authors:::",list(new_paper.authors.all()))
-            print("EMAIL IS: ",new_paper.authors.all()[0].email)
             send_mail(
             'Confirmation de Soumission',
-            'Votre article a été soumis avec succès à la conférence.',
+            'Votre contribution a été soumise avec succès à la conférence et sera bientôt examinée.',
             settings.EMAIL_HOST_USER,
             [new_paper.authors.all()[0].email],  # Remplacez par le véritable champ email du principal auteur
             fail_silently=False,
         )
             context = {
-                'error_message': 'Successfully Upload Your Paper',
+                'error_message': 'Contribution soumise avec Succès',
                 'v1':conf_instance.id,
                 }
             return render(request, 'singup/first_upload.html',context)

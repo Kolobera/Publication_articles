@@ -10,17 +10,17 @@
                     <table class="table table-bordered mx-auto">
                          <thead class="thead-dark">
                          <tr>
-                              <th scope="col" style="width: 20%;" >Paper ID</th>
-                              <th scope="col" style="width: 20%;" >Paper Title</th>
-                              <th scope="col" style="width: 20%;" >Conference Name</th>
-                              <th scope="col" style="width: 20%;" >Version</th>
+                              <th scope="col" style="width: 20%;" >ID Contribution</th>
+                              <th scope="col" style="width: 20%;" >Titre</th>
+                              <th scope="col" style="width: 20%;" >Nom de la Conference</th>
+                              
                               <th scope="col" style="width: 20%;" >Auth Name</th>
                               <th scope="col" style="width: 20%;" >Keyword</th>
                               <th scope="col" style="width: 20%;" >Abstract</th>
-                              <th scope="col" style="width: 10%;" >Paper </th>
-                              <th scope="col" style="width: 20%;" >Date Of Submit</th>
-                              <th scope="col">Status</th>
-                              <th scope="col">comments </th>
+                              <th scope="col" style="width: 10%;" >Article </th>
+                              <th scope="col" style="width: 20%;" >Date De soumission</th>
+                              <th scope="col">Statut</th>
+                              <th scope="col">commentaire </th>
                               <th scope="col">Resubmit</th>
                          </tr>
                          </thead>
@@ -30,10 +30,10 @@
                                    <th scope="row">ABC{{ paper.id|stringformat:"003d" }}</th>
                                    <td>{{paper.title_paper}}</td>
                                    <td>{{paper.conference}}</td>
-                                   <th>v{{paper.version}}</th>
+                                   
                                    <td>{{paper.Auth_name}}</td>
                                    <td>{{paper.paper_keyword}}</td>
-                                   <td>{{paper.paper_description}}</td>
+                                   <td>{{paper.abstract}}</td>
                                    <td><a href="/media/{{paper.paper_upload}}"style="width: 10%;" ">{{paper.paper_upload}}</a> </td>
                                    <td>{{paper.start_date}}</td>
                                    <td style="text-transform: capitalize;" >{{paper.status}}</td>
@@ -54,7 +54,7 @@
                </div>
           </div>
      {% else %}
-          <h4 class="my-4" style="text-align: center;color: red;">No Paper Submitted In This Conference</h4>
+          <h4 class="my-4" style="text-align: center;color: red;">Vous n'avez pas encore soumis de contribution pour cette conférence/h4>
      {% endif %}
      {% if reupload_paper %}
      <div class="container my-4">
