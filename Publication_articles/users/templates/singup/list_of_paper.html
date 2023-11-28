@@ -15,7 +15,6 @@
                               <th scope="col" style="width: 20%;" >Nom de la Conference</th>
                               
                               <th scope="col" style="width: 20%;" >Auth Name</th>
-                              <th scope="col" style="width: 20%;" >Keyword</th>
                               <th scope="col" style="width: 20%;" >Abstract</th>
                               <th scope="col" style="width: 10%;" >Article </th>
                               <th scope="col" style="width: 20%;" >Date De soumission</th>
@@ -32,7 +31,6 @@
                                    <td>{{paper.conference}}</td>
                                    
                                    <td>{{paper.Auth_name}}</td>
-                                   <td>{{paper.paper_keyword}}</td>
                                    <td>{{paper.abstract}}</td>
                                    <td><a href="/media/{{paper.paper_upload}}"style="width: 10%;" ">{{paper.paper_upload}}</a> </td>
                                    <td>{{paper.start_date}}</td>
@@ -46,7 +44,7 @@
                                              {% endif %}
                                         {% endfor %}
                                    </td>
-                                   <td><a href="{% url 'resubmit' paper_id=paper.id %}"><button class="btn btn-primary">Resubmit</button></a></td>
+                                   <td><a href="{% url 'resubmit' paper_id=paper.id %}"><button class="btn btn-primary">Modifier</button></a></td>
                               </tr>
                          {% endfor %}
                          </tbody>

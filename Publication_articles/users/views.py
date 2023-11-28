@@ -447,41 +447,54 @@ def resubmit(request,paper_id):
         user = request.user
         original_paper = get_object_or_404(paper, id=paper_id)
         if request.method=="POST":
-            paper_title=request.POST.get('title_paper')
-            Auth_name=request.POST.get('Auth_name')
-            paper_keyword=request.POST.get('paper_keyword')
-            paper_description=request.POST.get('paper_description')
-            pdf_upload = request.FILES.get('pdf_upload')
-            print(paper_keyword)
-            resubmit_paper=resubmit_papers(
-                paper_id=original_paper.id,
-                user=original_paper.user,
-                status='pending',
-                paper_keyword=paper_keyword,
-                conference=original_paper.conference,
-                title_paper=paper_title,
-                Auth_name=Auth_name,
-                paper_description=paper_description,
-                paper_upload=pdf_upload,
-                Auth_affiliation=original_paper.Auth_affiliation,
-                Auth_email=original_paper.Auth_email,
-                Auth_mobile=original_paper.Auth_mobile,
-                corresponding_auth_name=original_paper.corresponding_auth_name,
-                corresponding_auth_email=original_paper.corresponding_auth_email,
-                corresponding_auth_mobile=original_paper.corresponding_auth_mobile,
-                corresponding_auth_affiliation=original_paper.corresponding_auth_affiliation,
-                other_auth_mobile=original_paper.other_auth_mobile,
-                other_auth_email=original_paper.other_auth_email,
-                other_auth_name=original_paper.other_auth_name,
-                other_auth_affiliation=original_paper.other_auth_affiliation,
-                version=original_paper.version + 1
+            original_paper.title_paper=request.POST.get('title_paper')
+            original_paper.track_preference = get_object_or_404(ConferenceTrack, track_name=request.POST.get('track_preference'))
+            original_paper. main_topic = get_object_or_404(ConferenceTopic, topic_name=request.POST.get('main_topic'))
+            original_paper.contribution_type = request.POST.get('contribution_type')
+            original_paper.content_type = request.POST.get('content_type')
+            original_paper.abstract = request.POST.get('abstract')
+            authors_data = []
 
-            )
-            resubmit_paper.save()
+        # Itérer sur les champs des auteurs jusqu'à ce qu'il n'y en ait plus
+            i = 0
+            while f'authors[{i}][0]' in request.POST:
+                email = request.POST.get(f'authors[{i}][0]')
+                name = request.POST.get(f'authors[{i}][1]')
+                first_name = request.POST.get(f'authors[{i}][2]')
+                institution = request.POST.get(f'authors[{i}][3]')
+                country = request.POST.get(f'authors[{i}][4]')
+
+                authors_data.append((email, name, first_name, institution, country))
+                i += 1
+            if 'pdf_upload' in request.FILES:
+            # Si un nouveau fichier est téléchargé, le sauvegarder dans le modèle
+                original_paper.pdf_upload = request.FILES['pdf_upload']
+
+            for author_data in authors_data:
+                email, name, first_name, institution, country = author_data
+
+            # Vérifier si l'auteur existe déjà
+                author, created = Author.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        'first_name': name,
+                        'last_name': first_name,
+                        'institution': institution,
+                        'country': country,
+                    }
+                )
+                if author not in original_paper.authors.all():
+                    original_paper.authors.add(author)
+
+            
+            original_paper.save()
             context = {
-                'error_message': 'Successfully Upload Your Paper',
+                'error_message': 'Contribution Modifiée avec Succès',
                 "original_paper":get_object_or_404(paper, id=paper_id),
                 "fname":user.name,
+                'tracks' : get_object_or_404(conference, id=int(original_paper.conference.id)).tracks.all(),
+                'topics' : get_object_or_404(conference, id=int(original_paper.conference.id)).topics.all(),
+                'all_authors': original_paper.authors.all()
                 }
             return render(request, 'singup/resubmit.html',context)
         

@@ -66,6 +66,7 @@
                                <th>Pays</th>
                            </tr>
                            <!-- Première ligne vide pour permettre l'ajout -->
+                           {% if not all_authors %}
                            <tr>
                                <td><input type="email" name="authors[0][0]" required></td>
                                <td><input type="text" name="authors[0][1]" required></td>
@@ -73,7 +74,19 @@
                                <td><input type="text" name="authors[0][3]" required></td>
                                <td><input type="text" name="authors[0][4]" required></td>
                            </tr>
+                           {% endif %}
                            <!-- Autres lignes d'auteurs seront ajoutées ici dynamiquement -->
+                           {% for author in all_authors %}
+                                <tr>
+                                        <td><input type="email" name="authors[{{ forloop.counter }}][0]" value="{{ author.email }}" required></td>
+                                        <td><input type="text" name="authors[{{ forloop.counter }}][1]" value="{{ author.last_name }}" required></td>
+                                        <td><input type="text" name="authors[{{ forloop.counter }}][2]" value="{{ author.first_name }}" required></td>
+                                        <td><input type="text" name="authors[{{ forloop.counter }}][3]" value="{{ author.institution }}" required></td>
+                                        <td><input type="text" name="authors[{{ forloop.counter }}][4]" value="{{ author.country }}" required></td>
+                                </tr>
+                          {% endfor %}
+
+
                        </table>
                        
                        <button type="button" onclick="addAuthorRow()">Ajouter un auteur</button>
@@ -89,15 +102,16 @@
                 
                 <div class="mb-3">
                         <label for="exampleFormControlInput1" class="form-label">Résumé</label>
-                        <input type="text" name="abstract" class="form-control" id="exampleFormControlInput1"
+                        <input type="text" name="abstract" class="form-control" id="exampleFormControlInput1" 
+                        value="{{ original_paper.abstract }}"
                 >
                 </div>
                 <div class="input-group mb-3">
-                   <input type="file" name="pdf_upload" class="form-control" id="inputGroupFile02">
+                   <input type="file" name="pdf_upload" class="form-control" id="inputGroupFile02" value="{{ original_paper.pdf_upload.url }}">
 
                  </div>
                 <div class="col-auto">
-                        <button type="submit" class="btn btn-success my-3">Soumettre la contribution</button>
+                        <button type="submit" class="btn btn-success my-3">Modifier la contribution</button>
                         <a class="btn btn-secondary mx-2" href="../../../">Retour</a>
                 </div>
 
